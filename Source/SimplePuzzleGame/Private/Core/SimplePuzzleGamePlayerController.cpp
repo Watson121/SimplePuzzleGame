@@ -1,11 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "SimplePuzzleGamePlayerController.h"
+#include "Interfaces/InteractionInterface.h"
+#include "Core/SimplePuzzleGamePlayerController.h"
 #include "GameFramework/Pawn.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "SimplePuzzleGameCharacter.h"
+#include "Core/SimplePuzzleGameCharacter.h"
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -89,6 +90,14 @@ void ASimplePuzzleGamePlayerController::OnSetDestinationTriggered()
 		CachedDestination = Hit.Location;
 	}
 	
+	if (Hit.GetActor() != NULL) {
+		AActor* selectedActor = Hit.GetActor();
+
+		if (selectedActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass())) {
+			IInteractionInterface::Execute_Use(selectedActor, Cast<ASimplePuzzleGameCharacter>(this->GetCharacter()));
+		}
+	}
+
 	// Move towards mouse pointer or touch
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
