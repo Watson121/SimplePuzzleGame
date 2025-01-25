@@ -44,10 +44,16 @@ void ASimplePuzzleGamePlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup mouse input events
+
+		/* Set Desination Click Actions */
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ASimplePuzzleGamePlayerController::OnInputStarted);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ASimplePuzzleGamePlayerController::OnSetDestinationTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ASimplePuzzleGamePlayerController::OnSetDestinationReleased);
 		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ASimplePuzzleGamePlayerController::OnSetDestinationReleased);
+
+		/* Use Click Actions */
+		EnhancedInputComponent->BindAction(UseClickAction, ETriggerEvent::Triggered, this, &ASimplePuzzleGamePlayerController::OnUsedTriggered);
+
 
 		// Setup touch input events
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &ASimplePuzzleGamePlayerController::OnInputStarted);
@@ -73,31 +79,14 @@ void ASimplePuzzleGamePlayerController::OnSetDestinationTriggered()
 	FollowTime += GetWorld()->GetDeltaSeconds();
 	
 	// We look for the location in the world where the player has pressed the input
-	FHitResult Hit;
-	bool bHitSuccessful = false;
-	if (bIsTouch)
-	{
-		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
-	}
-	else
-	{
-		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
-	}
+	FHitResult Hit = ReturnHitResult();
 
 	// If we hit a surface, cache the location
-	if (bHitSuccessful)
+	if (Hit.bBlockingHit)
 	{
 		CachedDestination = Hit.Location;
 	}
 	
-	if (Hit.GetActor() != NULL) {
-		AActor* selectedActor = Hit.GetActor();
-
-		if (selectedActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass())) {
-			IInteractionInterface::Execute_Use(selectedActor, Cast<ASimplePuzzleGameCharacter>(this->GetCharacter()));
-		}
-	}
-
 	// Move towards mouse pointer or touch
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
@@ -131,4 +120,33 @@ void ASimplePuzzleGamePlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void ASimplePuzzleGamePlayerController::OnUsedTriggered()
+{
+	FHitResult Hit = ReturnHitResult();
+
+	if (Hit.GetActor() != NULL) {
+		AActor* selectedActor = Hit.GetActor();
+
+		if (selectedActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass())) {
+			IInteractionInterface::Execute_Use(selectedActor, Cast<ASimplePuzzleGameCharacter>(this->GetCharacter()));
+		}
+	}
+}
+
+FHitResult ASimplePuzzleGamePlayerController::ReturnHitResult() const
+{
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+	if (bIsTouch)
+	{
+		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
+	}
+	else
+	{
+		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	}
+
+	return Hit;
 }
