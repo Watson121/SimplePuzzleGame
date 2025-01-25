@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SimplePuzzleGameGameMode.h"
-#include "SimplePuzzleGamePlayerController.h"
-#include "SimplePuzzleGameCharacter.h"
+#include "Core/SimplePuzzleGamePlayerController.h"
+#include "Core/SimplePuzzleGameCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ASimplePuzzleGameGameMode::ASimplePuzzleGameGameMode()
