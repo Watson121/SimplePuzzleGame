@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SimplePuzzleGameCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAllPaperCollected);
+
 UCLASS(Blueprintable)
 class ASimplePuzzleGameCharacter : public ACharacter
 {
@@ -22,6 +24,12 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BlueprintCallable)
+	void IncreaseBitsOfPaper();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAllPaperCollected AllPaperCollected;
+
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -30,5 +38,11 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY()
+	int bitsOfPaper = 0;
+	
+	int maxBitsOfPaperToFind = 4;
+
 };
 
