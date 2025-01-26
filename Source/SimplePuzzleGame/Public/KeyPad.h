@@ -36,6 +36,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UTextBlock* ConfirmationText;
 
+	UFUNCTION(BlueprintPure)
+	FString GetCorrectCode();
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly)

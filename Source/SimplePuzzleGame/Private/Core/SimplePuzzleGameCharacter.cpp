@@ -49,3 +49,12 @@ void ASimplePuzzleGameCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 }
+
+void ASimplePuzzleGameCharacter::IncreaseBitsOfPaper()
+{
+	bitsOfPaper++;
+
+	if (bitsOfPaper == maxBitsOfPaperToFind) {
+		AllPaperCollected.Broadcast();
+	}
+}

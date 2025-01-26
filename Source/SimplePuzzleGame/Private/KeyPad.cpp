@@ -13,6 +13,11 @@ void UKeyPad::NativeConstruct()
 	ConfirmButton->OnClicked.AddUniqueDynamic(this, &UKeyPad::CheckIfCorrect);
 }
 
+FString UKeyPad::GetCorrectCode()
+{
+	return correctCode;
+}
+
 void UKeyPad::CheckIfCorrect()
 {
 	FString currentCode;
